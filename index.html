@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>AU Lockscreen - Haruto</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Rounded", sans-serif; 
+            margin: 0; overflow: hidden; overscroll-behavior: none; background: #000;
+        }
+        .text-shadow { text-shadow: 0 1px 15px rgba(0,0,0,0.3); }
+        .glass { 
+            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); 
+            border: 1px solid rgba(255, 255, 255, 0.25); box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+        }
+        .glass-dark { 
+            background: rgba(0, 0, 0, 0.4); backdrop-filter: blur(40px); -webkit-backdrop-filter: blur(40px); 
+        }
+        .glass-btn { 
+            background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(20px); 
+            border: 1px solid rgba(255, 255, 255, 0.1); 
+        }
+        .ios-icon { border-radius: 22.5%; }
+        .shake { animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 
+            10%, 90% { transform: translate3d(-2px, 0, 0); } 
+            20%, 80% { transform: translate3d(4px, 0, 0); } 
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 
+            40%, 60% { transform: translate3d(6px, 0, 0); } 
+        }
+        .bounce-subtle { animation: bounceS 2s infinite ease-in-out; }
+        @keyframes bounceS { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+        .screen { transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.5s ease; }
+        .hidden-up { transform: translateY(-100%); opacity: 0; pointer-events: none; }
+        .active { transform: translateY(0); opacity: 1; pointer-events: auto; }
+        .num-key:active { background: rgba(255, 255, 255, 0.4); }
+    </style>
+</head>
+<body class="h-[100dvh] w-screen text-white select-none">
+
+    <img src="https://i.postimg.cc/prvp4Hxk/Whats-App-Image-2026-10-24-at-6-28-00-AM.jpg" 
+         class="absolute inset-0 w-full h-full object-cover z-0" alt="Wallpaper">
+
+    <div id="lockscreen" class="absolute inset-0 z-10 flex flex-col pt-16 pb-8 px-4 screen active">
+        <div class="flex flex-col items-center">
+            <p id="date-display" class="text-[20px] font-semibold tracking-wide text-shadow mb-1">Saturday, 24 October</p>
+            <h1 id="time-display" class="text-[90px] font-[800] leading-none tracking-tighter text-shadow mb-4">12:00</h1>
+            
+            <div class="glass rounded-full px-1 py-1 flex items-center gap-1 text-[13px] font-medium w-max cursor-pointer z-20" onclick="toggleLanguage()">
+                <div id="btn-en" class="px-4 py-1 rounded-full bg-white text-black transition-all">english</div>
+                <div id="btn-id" class="px-4 py-1 rounded-full text-white transition-all">indonesia</div>
+            </div>
+        </div>
+
+        <div class="flex-grow"></div>
+
+        <div class="flex flex-col gap-2 mb-6 w-full max-w-sm mx-auto relative z-20">
+            <div class="glass rounded-[24px] p-3.5 flex gap-3.5 items-center">
+                <div class="w-[40px] h-[40px] ios-icon bg-[#34C759] flex items-center justify-center shrink-0">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="white"><path d="M20 15.5c-1.2 0-2.4-.2-3.6-.6-.3-.1-.7 0-1 .2l-2.2 2.2c-2.8-1.4-5.1-3.8-6.6-6.6l2.2-2.2c.3-.3.4-.7.2-1-.3-1.1-.5-2.3-.5-3.5 0-.6-.4-1-1-1H3c-.6 0-1 .4-1 1 0 10.5 8.5 19 19 19 .6 0 1-.4 1-1v-3.5c0-.6-.4-1-1-1z"/></svg>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex justify-between items-center mb-0.5">
+                        <span class="font-semibold text-[15px] opacity-90">junkyu 🐈🤍</span>
+                        <span class="text-xs opacity-60">now</span>
+                    </div>
+                    <p id="notif-call" class="text-[14px] opacity-80 leading-snug">missed call</p>
+                </div>
+            </div>
+
+            <div class="glass rounded-[24px] p-3.5 flex gap-3.5 items-center">
+                <div class="w-[40px] h-[40px] ios-icon bg-[#25D366] flex items-center justify-center shrink-0">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="white"><path d="M12.031 0C5.385 0 0 5.384 0 12.032c0 2.128.552 4.195 1.603 6.012L.15 23.364l5.474-1.436a11.97 11.97 0 006.407 1.83h.005c6.645 0 12.03-5.385 12.03-12.032C24.066 5.384 18.679 0 12.031 0zM12.03 21.758h-.005a9.97 9.97 0 01-5.086-1.39l-.365-.216-3.784.992.993-3.69-.236-.376A9.973 9.973 0 012.062 12.03c0-5.5 4.477-9.977 9.973-9.977 5.5 0 9.973 4.477 9.973 9.977 0 5.5-4.472 9.973-9.973 9.973zm5.473-7.469c-.3-.15-1.776-.877-2.05-.978-.275-.101-.476-.15-.676.15-.2.301-.776.977-.951 1.178-.175.201-.35.226-.65.076-1.442-.72-2.585-1.32-3.65-2.7-.275-.35-.025-.525.125-.675.125-.125.3-.325.45-.5.15-.175.2-.3.3-.5s.05-.375-.025-.525c-.075-.15-.676-1.625-.926-2.225-.25-.6-.5-.525-.675-.525-.175 0-.375-.025-.575-.025-.2 0-.525.075-.8.375-.275.3-1.05 1.025-1.05 2.5 0 1.475 1.075 2.9 1.225 3.1.15.2 2.125 3.225 5.125 4.5 2.025.85 2.6.9 3.15.85.55-.05 1.775-.725 2.025-1.425.25-.7.25-1.3.175-1.425-.075-.125-.275-.2-.575-.35z"/></svg>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex justify-between items-center mb-0.5">
+                        <span class="font-semibold text-[15px] opacity-90">the usual suspects</span>
+                        <span class="text-xs opacity-60">now</span>
+                    </div>
+                    <p id="notif-wa" class="text-[14px] opacity-80 leading-snug">
+                        <span class="font-medium">jeongwoo:</span> to, still at the garage? let's go, we're all here
+                    </p>
+                </div>
+            </div>
+
+            <div class="glass rounded-[24px] p-3.5 flex gap-3.5 items-center">
+                <div class="w-[40px] h-[40px] ios-icon bg-white flex flex-col shrink-0 overflow-hidden relative">
+                    <div class="w-full h-[35%] bg-[#FF3B30] flex items-center justify-center"></div>
+                    <div class="flex-grow flex items-center justify-center">
+                        <span id="calendar-icon-date" class="text-black font-semibold text-[20px] leading-none mt-0.5 tracking-tighter">24</span>
+                    </div>
+                </div>
+                <div class="flex-grow">
+                    <div class="flex justify-between items-center mb-0.5">
+                        <span id="notif-cal-title" class="font-semibold text-[15px] opacity-90">calendar</span>
+                        <span class="text-xs opacity-60">now</span>
+                    </div>
+                    <p id="notif-cal" class="text-[14px] opacity-80 leading-snug">today - mechanic shop date at 5 pm. 🛠️🤍</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="flex justify-between items-end px-6 w-full cursor-pointer relative z-20 h-16" onclick="openPasscode()">
+            <div class="glass-btn w-[50px] h-[50px] rounded-full flex items-center justify-center">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V3L10 3V9L7 13V21H17V13L14 9Z"/></svg>
+            </div>
+            
+            <p id="swipe-text" class="text-[14px] font-medium mb-3 bounce-subtle opacity-90 tracking-wide">swipe up to open</p>
+            
+            <div class="glass-btn w-[50px] h-[50px] rounded-full flex items-center justify-center">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+            </div>
+        </div>
+        <div class="w-[35%] h-[5px] bg-white rounded-full mx-auto mt-5 opacity-90"></div>
+    </div>
+
+    <div id="passcode-screen" class="absolute inset-0 z-30 glass-dark flex flex-col items-center justify-center screen opacity-0 pointer-events-none transition-opacity duration-300">
+        <p id="passcode-title" class="text-[20px] font-semibold tracking-wide mb-8">enter passcode</p>
+        
+        <div id="dots-container" class="flex gap-5 mb-16">
+            <div class="dot w-3.5 h-3.5 rounded-full border-2 border-white transition-all"></div>
+            <div class="dot w-3.5 h-3.5 rounded-full border-2 border-white transition-all"></div>
+            <div class="dot w-3.5 h-3.5 rounded-full border-2 border-white transition-all"></div>
+            <div class="dot w-3.5 h-3.5 rounded-full border-2 border-white transition-all"></div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-x-7 gap-y-4 mb-8">
+            <button onclick="pressKey(1)" class="num-key w-[75px] h-[75px] rounded-full glass-btn flex flex-col items-center justify-center transition-colors">
+                <span class="text-[34px] font-normal leading-none mt-1">1</span>
+            </button>
+            <button onclick="pressKey(2)" class="num-key w-[75px] h-[75px] rounded-full glass-btn flex flex-col items-center justify-center transition-colors">
+                <span class="text-[34px] font-normal leading-none mt-1">2</span>
+                <span class="text-[10px] font-bold tracking-[0.2em] uppercase">abc</span>
+            </button>
+            <button onclick="pressKey(3)" class="num-key w-[75px] h-[75px] rounded-full glass-btn flex flex-col items-center justify-center transition-colors">
+                <span class="text-[34px] font-normal leading-none mt-1">3</span>
+                <span class="text-[10px] font-bold tracking-[0.2em] uppercase">def</span>
+            </button>
+            <button onclick="pressKey(4)" class="num-key w-[75px] h-[75px] rounded-full glass-btn flex flex-col items-center justify-center transition-colors">
+                <span class="text-[34px] font-normal leading-none mt-1">4</span>
+                <span class="text-[10px] font-bold tracking-[0.2em] uppercase">ghi</span>
+            </button>
+            <button onclick="pressKey(5)" class="num-key w-[75px] h-[75px] rounded-full glass-btn flex flex-col items-center justify-center transition-colors">
+                <span class="text-[34px] font-normal leading-none mt-1">5</span>
+                <span class="text-[10px] font-bold tracking-[0.2em] uppercase">jkl</span>
+            </button>
+            <button onclick="pressKey(6)" class="num-key w-[75px] h-[75px] rounded-full glass-btn flex flex-col items-center justify-center transition-colors">
+                <span class="text-[34px] font-normal leading-none mt-1">6</span>
+                <span class="text-[10px] font-bold tracking-[0.2em] uppercase">mno</span>
+            </button>
+            <button onclick="pressKey(7)" class="num-key w-[75px] h-[75px] rounded-full glass-btn flex flex-col items-center justify-center transition-colors">
+                <span class="text-[34px] font-normal leading-none mt-1">7</span>
+                <span class="text-[10px] font-bold tracking-[0.2em] uppercase">pqrs</span>
+            </button>
+            <button onclick="pressKey(8)" class="num-key w-[75px] h-[75px] rounded-full glass-btn flex flex-col items-center justify-center transition-colors">
+                <span class="text-[34px] font-normal leading-none mt-1">8</span>
+                <span class="text-[10px] font-bold tracking-[0.2em] uppercase">tuv</span>
+            </button>
+            <button onclick="pressKey(9)" class="num-key w-[75px] h-[75px] rounded-full glass-btn flex flex-col items-center justify-center transition-colors">
+                <span class="text-[34px] font-normal leading-none mt-1">9</span>
+                <span class="text-[10px] font-bold tracking-[0.2em] uppercase">wxyz</span>
+            </button>
+            <div></div>
+            <button onclick="pressKey(0)" class="num-key w-[75px] h-[75px] rounded-full glass-btn flex flex-col items-center justify-center transition-colors">
+                <span class="text-[34px] font-normal leading-none">0</span>
+            </button>
+            <button onclick="closePasscode()" class="w-[75px] h-[75px] rounded-full flex items-center justify-center font-medium text-[17px] opacity-90">
+                Cancel
+            </button>
+        </div>
+    </div>
+
+    <div id="unlocked-screen" class="absolute inset-0 z-40 bg-black/80 flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-700">
+        <p id="unlocked-text" class="text-[22px] font-medium tracking-wide">unlocked</p>
+    </div>
+
+    <script>
+        function updateTime() {
+            const now = new Date();
+            const lang = currentLang === 'en' ? 'en-US' : 'id-ID';
+            
+            let hours = now.getHours().toString().padStart(2, '0');
+            let minutes = now.getMinutes().toString().padStart(2, '0');
+            document.getElementById('time-display').innerText = `${hours}:${minutes}`;
+            
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            document.getElementById('date-display').innerText = now.toLocaleDateString(lang, options);
+            document.getElementById('calendar-icon-date').innerText = now.getDate();
+        }
+        setInterval(updateTime, 1000);
+
+        let currentLang = 'en';
+        const texts = {
+            en: {
+                call: "missed call",
+                wa: "<span class='font-medium'>jeongwoo:</span> to, still at the garage? let's go, we're all here",
+                calTitle: "calendar",
+                cal: "today - mechanic shop date at 5 pm. 🛠️🤍",
+                swipe: "swipe up to open",
+                passtitle: "enter passcode",
+                unlock: "unlocked"
+            },
+            id: {
+                call: "panggilan tak terjawab",
+                wa: "<span class='font-medium'>jeongwoo:</span> to, masih di bengkel? cabut woi udh pada ngumpul nih",
+                calTitle: "kalender",
+                cal: "hari ini - kencan sama ruto di bengkel jam 5 sore. 🛠️🤍",
+                swipe: "usap ke atas untuk membuka",
+                passtitle: "masukkan sandi",
+                unlock: "terbuka"
+            }
+        };
+
+        function toggleLanguage() {
+            currentLang = currentLang === 'en' ? 'id' : 'en';
+            
+            let btnId = document.getElementById('btn-id');
+            let btnEn = document.getElementById('btn-en');
+            
+            if(currentLang === 'id') {
+                btnId.classList.replace('text-white', 'text-black');
+                btnId.classList.add('bg-white');
+                btnEn.classList.replace('text-black', 'text-white');
+                btnEn.classList.remove('bg-white');
+            } else {
+                btnEn.classList.replace('text-white', 'text-black');
+                btnEn.classList.add('bg-white');
+                btnId.classList.replace('text-black', 'text-white');
+                btnId.classList.remove('bg-white');
+            }
+
+            document.getElementById('notif-call').innerText = texts[currentLang].call;
+            document.getElementById('notif-wa').innerHTML = texts[currentLang].wa;
+            document.getElementById('notif-cal-title').innerText = texts[currentLang].calTitle;
+            document.getElementById('notif-cal').innerText = texts[currentLang].cal;
+            document.getElementById('swipe-text').innerText = texts[currentLang].swipe;
+            document.getElementById('passcode-title').innerText = texts[currentLang].passtitle;
+            document.getElementById('unlocked-text').innerText = texts[currentLang].unlock;
+            updateTime();
+        }
+
+        function openPasscode() {
+            document.getElementById('lockscreen').classList.add('hidden-up');
+            document.getElementById('lockscreen').classList.remove('active');
+            let passScreen = document.getElementById('passcode-screen');
+            passScreen.classList.remove('opacity-0', 'pointer-events-none');
+            passScreen.classList.add('opacity-100', 'pointer-events-auto');
+        }
+
+        function closePasscode() {
+            let passScreen = document.getElementById('passcode-screen');
+            passScreen.classList.add('opacity-0', 'pointer-events-none');
+            passScreen.classList.remove('opacity-100', 'pointer-events-auto');
+            document.getElementById('lockscreen').classList.remove('hidden-up');
+            document.getElementById('lockscreen').classList.add('active');
+            clearPasscode();
+        }
+
+        let inputCode = "";
+        function pressKey(num) {
+            if(inputCode.length < 4) {
+                inputCode += num;
+                updateDots();
+                if(inputCode.length === 4) {
+                    setTimeout(checkPasscode, 150);
+                }
+            }
+        }
+
+        function updateDots() {
+            const dots = document.querySelectorAll('.dot');
+            dots.forEach((dot, index) => {
+                if(index < inputCode.length) {
+                    dot.classList.add('bg-white');
+                } else {
+                    dot.classList.remove('bg-white');
+                }
+            });
+        }
+
+        function checkPasscode() {
+            if(inputCode === "2311") {
+                document.getElementById('passcode-screen').classList.add('opacity-0', 'pointer-events-none');
+                let unlockedScreen = document.getElementById('unlocked-screen');
+                unlockedScreen.classList.remove('opacity-0', 'pointer-events-none');
+                unlockedScreen.classList.add('opacity-100');
+            } else {
+                const container = document.getElementById('dots-container');
+                container.classList.add('shake');
+                setTimeout(() => {
+                    container.classList.remove('shake');
+                    clearPasscode();
+                }, 400);
+            }
+        }
+
+        function clearPasscode() {
+            inputCode = "";
+            updateDots();
+        }
+
+        updateTime();
+    </script>
+</body>
+  </html>
